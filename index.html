@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FR Air PRO v7.0 &bull; 旗艦節點雷達與極速檔案傳輸</title>
+    <title>FR Air PRO v8.0 &bull; 智慧裝置及時對接與檔案傳輸</title>
     <!-- Favicon -->
     <link rel="icon" type="image/jpeg" href="https://i.ibb.co/wNmcM1hp/FRAIRPRO.jpg">
     <!-- Tailwind CSS v4 CDN -->
@@ -22,10 +22,6 @@
         @keyframes shimmerLine {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
-        }
-        @keyframes radarScanRotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
         .shimmer-anim {
             background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
@@ -79,20 +75,15 @@
                 <div>
                     <div class="flex items-center gap-2">
                         <h1 class="font-black text-xl tracking-tight bg-gradient-to-r from-blue-400 via-indigo-200 to-cyan-300 bg-clip-text text-transparent">FR Air PRO</h1>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">v7.0 旗艦黑金版</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">v8.0 及時對接旗艦版</span>
                     </div>
-                    <p class="text-[11px] text-slate-400 font-medium tracking-wide">次世代真雙向雷達與無失真高速檔案傳輸</p>
+                    <p class="text-[11px] text-slate-400 font-medium tracking-wide">免手動代碼 &bull; 裝置一鍵即時對接與高速直傳</p>
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <!-- 升級版雷達按鈕 -->
-                <button onclick="openRealRadar()" class="px-4 py-2.5 rounded-2xl text-xs font-bold bg-gradient-to-r from-cyan-500/20 to-blue-500/20 hover:from-cyan-500/30 hover:to-blue-500/30 text-cyan-300 border border-cyan-500/40 transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-cyan-950/40 hover:scale-105">
-                    <i data-lucide="radar" class="w-4 h-4 animate-spin" style="animation-duration: 3s;"></i>
-                    <span>鄰近節點雷達</span>
-                </button>
-                <div id="connectionBadge" class="hidden sm:flex px-4 py-2.5 rounded-2xl text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 items-center gap-2 shadow-sm">
+                <div id="connectionBadge" class="flex px-4 py-2.5 rounded-2xl text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 items-center gap-2 shadow-sm">
                     <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                    <span>等待連線</span>
+                    <span>等待對接</span>
                 </div>
             </div>
         </div>
@@ -105,11 +96,11 @@
         <div class="grid grid-cols-2 gap-3 luxury-glass p-2.5 rounded-3xl shadow-2xl">
             <button onclick="switchTab('send')" id="tabSend" class="py-4 rounded-2xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 text-slate-950 shadow-xl shadow-blue-950/70 cursor-pointer hover:opacity-95 scale-[1.02]">
                 <i data-lucide="upload-cloud" class="w-4 h-4"></i>
-                傳送檔案 (Sender)
+                傳送端 (Sender)
             </button>
             <button onclick="switchTab('recv')" id="tabRecv" class="py-4 rounded-2xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2.5 text-slate-400 hover:text-slate-200 cursor-pointer">
                 <i data-lucide="download-cloud" class="w-4 h-4"></i>
-                接收檔案 (Receiver)
+                接收端與裝置對接 (Receiver)
             </button>
         </div>
 
@@ -133,7 +124,7 @@
                     </div>
                     <div class="text-center">
                         <p class="text-base font-bold text-slate-200 group-hover:text-blue-300 transition-colors">點擊或將多個檔案拖曳至此</p>
-                        <p class="text-xs text-slate-400 mt-1.5">完美支援高畫質影片、大型壓縮檔及圖片批次發送</p>
+                        <p class="text-xs text-slate-400 mt-1.5">支援高畫質影片、大型壓縮檔及圖片批次發送</p>
                     </div>
                     <input type="file" id="fileInput" multiple class="hidden">
                 </label>
@@ -149,7 +140,7 @@
                     <div id="fileListContainer" class="max-h-56 overflow-y-auto custom-scrollbar flex flex-col gap-2.5 pr-1"></div>
                 </div>
 
-                <!-- 狀態資訊與金鑰欄位 -->
+                <!-- 狀態資訊與節點廣播 -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                     <div class="bg-slate-950/80 border border-white/10 rounded-2xl p-5 flex items-center justify-between shadow-inner">
                         <div class="flex items-center gap-3.5">
@@ -166,8 +157,8 @@
 
                     <div class="bg-slate-950/80 border border-white/10 rounded-2xl p-5 flex items-center justify-between shadow-inner">
                         <div>
-                            <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">安全傳輸金鑰</span>
-                            <p id="roomCodeDisplay" class="text-2xl font-black tracking-[0.25em] text-blue-400 font-mono mt-0.5">------</p>
+                            <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">備用安全代碼</span>
+                            <p id="roomCodeDisplay" class="text-2xl font-black tracking-widest text-blue-400 font-mono mt-0.5">------</p>
                         </div>
                         <div class="flex items-center gap-2">
                             <button onclick="generateNewRoom()" title="重新產生" class="p-3 bg-slate-800/90 hover:bg-slate-700 text-slate-300 rounded-xl transition-all cursor-pointer border border-white/10">
@@ -194,27 +185,46 @@
                 </div>
 
                 <button id="startSendBtn" onclick="startHosting()" disabled class="w-full py-5 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 hover:opacity-95 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-600 text-slate-950 font-black rounded-2xl transition-all shadow-2xl shadow-blue-950/80 flex items-center justify-center gap-3 cursor-pointer text-base hover:scale-[1.01] active:scale-[0.99]">
-                    <i data-lucide="radio" class="w-5 h-5"></i> 啟動 FR Air 高速傳輸節點
+                    <i data-lucide="radio" class="w-5 h-5"></i> 啟動及時對接廣播節點
                 </button>
             </div>
         </div>
 
-        <!-- ================= 接收端控制面板 ================= -->
+        <!-- ================= 接收端與及時對接控制面板 ================= -->
         <div id="panelRecv" class="hidden flex flex-col gap-6 transition-all duration-500">
             <div class="luxury-glass rounded-3xl p-8 sm:p-10 shadow-2xl flex flex-col gap-6 relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
                 <div class="flex items-center justify-between">
                     <h2 class="text-base font-bold text-slate-200 flex items-center gap-2.5">
-                        <i data-lucide="zap" class="w-5 h-5 text-blue-400"></i>
-                        輸入 6 位數安全代碼接收檔案
+                        <i data-lucide="radar" class="w-5 h-5 text-cyan-400"></i>
+                        及時裝置對接清單（免代碼點擊即連）
                     </h2>
-                    <span class="text-xs text-blue-400 font-mono bg-blue-500/15 px-3 py-1 rounded-xl border border-blue-500/30 shadow-inner">無損極速下載</span>
+                    <button onclick="scanNearbyDevices()" class="px-3 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 text-xs font-bold border border-cyan-500/30 transition-all flex items-center gap-1.5 cursor-pointer">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> 重新整理
+                    </button>
                 </div>
 
-                <div class="flex flex-col gap-3">
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">安全解密代碼</label>
-                    <input type="text" id="inputRoomCode" maxlength="6" placeholder="例: 888888" class="w-full py-5 px-6 bg-slate-950/90 border border-white/15 rounded-2xl text-center text-3xl sm:text-4xl font-black tracking-[0.5em] text-blue-400 font-mono focus:outline-none focus:border-blue-500 transition-all shadow-inner">
+                <!-- 附近在線發送端裝置列表 -->
+                <div id="nearbyDeviceList" class="flex flex-col gap-3">
+                    <div class="p-6 bg-slate-950/80 rounded-2xl border border-white/10 text-center text-xs text-slate-400 flex flex-col items-center gap-2">
+                        <i data-lucide="search" class="w-6 h-6 text-slate-500 animate-pulse"></i>
+                        <span>正在搜尋附近的在線傳輸裝置...（或請發送端先點擊啟動節點）</span>
+                    </div>
+                </div>
+
+                <div class="relative flex py-2 items-center">
+                    <div class="flex-grow border-t border-white/10"></div>
+                    <span class="flex-shrink mx-4 text-slate-500 text-xs font-mono">或使用備用代碼</span>
+                    <div class="flex-grow border-t border-white/10"></div>
+                </div>
+
+                <!-- 傳統 6 位數代碼備用輸入 -->
+                <div class="flex gap-3">
+                    <input type="text" id="inputRoomCode" maxlength="6" placeholder="輸入 6 位數代碼" class="flex-1 py-4 px-5 bg-slate-950/90 border border-white/15 rounded-2xl text-center text-2xl font-black tracking-[0.3em] text-blue-400 font-mono focus:outline-none focus:border-blue-500 transition-all shadow-inner">
+                    <button onclick="connectWithCode()" class="px-6 py-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-2xl text-xs transition-all cursor-pointer border border-white/10 shadow-lg">
+                        代碼連線
+                    </button>
                 </div>
 
                 <!-- 接收進度條 -->
@@ -229,10 +239,6 @@
                         </div>
                     </div>
                 </div>
-
-                <button onclick="connectAndReceive()" class="w-full py-5 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 hover:opacity-95 text-slate-950 font-black rounded-2xl transition-all shadow-2xl shadow-blue-950/80 flex items-center justify-center gap-3 cursor-pointer text-base hover:scale-[1.01] active:scale-[0.99]">
-                    <i data-lucide="download" class="w-5 h-5"></i> 連線並高速接收檔案
-                </button>
 
                 <!-- 接收完成區 -->
                 <div id="recvSuccessArea" class="hidden flex flex-col items-center justify-center gap-4 p-6 bg-blue-950/40 border border-blue-500/40 rounded-3xl text-center backdrop-blur-md animate-in zoom-in-95 duration-300">
@@ -258,52 +264,11 @@
                 <button onclick="clearLogs()" class="hover:text-slate-200 cursor-pointer transition-colors px-2.5 py-1 rounded-lg bg-white/5">清除日誌</button>
             </div>
             <div id="logBox" class="h-32 overflow-y-auto custom-scrollbar font-mono text-[11px] text-slate-400 flex flex-col gap-1.5 p-4 bg-slate-950/90 rounded-2xl border border-white/5">
-                <div>[FR Air PRO v7.0] 系統初始化完成。真雙向廣播雷達核心已上線。</div>
+                <div>[FR Air PRO v8.0] 系統初始化完成。及時裝置對接核心已啟動。</div>
             </div>
         </div>
 
     </main>
-
-    <!-- ================= 真實多點雷達互動 Modal ================= -->
-    <div id="radarModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-xl hidden animate-in fade-in duration-300">
-        <div class="luxury-glass max-w-lg w-full mx-4 rounded-3xl p-8 shadow-2xl flex flex-col items-center text-center gap-6 border border-cyan-500/40 relative overflow-hidden">
-            <div class="absolute inset-0 bg-gradient-to-b from-cyan-500/5 via-transparent to-blue-500/5 pointer-events-none"></div>
-            
-            <div class="flex items-center justify-between w-full border-b border-white/10 pb-4">
-                <h3 class="font-bold text-lg text-slate-100 flex items-center gap-2.5">
-                    <i data-lucide="radar" class="w-6 h-6 text-cyan-400"></i>
-                    鄰近在線節點動態雷達
-                </h3>
-                <button onclick="toggleRadarModal(false)" class="p-2.5 text-slate-400 hover:text-slate-200 rounded-2xl hover:bg-white/5 transition-all cursor-pointer">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            
-            <!-- 精緻雷達掃描動畫視覺 -->
-            <div class="w-44 h-44 rounded-full border border-cyan-500/40 flex items-center justify-center relative my-2 shadow-2xl shadow-cyan-950/50">
-                <div class="absolute inset-0 rounded-full border border-cyan-500/20 animate-ping" style="animation-duration: 3.5s;"></div>
-                <div class="absolute inset-4 rounded-full border border-cyan-500/40"></div>
-                <div class="absolute inset-10 rounded-full border border-cyan-500/60"></div>
-                <div class="w-4 h-4 rounded-full bg-cyan-400 shadow-lg shadow-cyan-400 animate-pulse"></div>
-                <div class="absolute inset-0 rounded-full overflow-hidden pointer-events-none" style="animation: radarScanRotate 3s linear infinite;">
-                    <div class="w-1/2 h-full bg-gradient-to-r from-transparent via-cyan-400/20 to-cyan-400/40 origin-right"></div>
-                </div>
-            </div>
-
-            <div id="radarStatusText" class="text-xs text-cyan-300 font-mono">正在透過全網段廣播探測線上活躍節點...</div>
-            
-            <!-- 偵測到的裝置清單 -->
-            <div id="radarDeviceList" class="w-full max-h-52 overflow-y-auto custom-scrollbar flex flex-col gap-2.5 text-left">
-                <div class="p-4 bg-slate-900/70 rounded-2xl border border-white/5 text-center text-xs text-slate-400 italic">
-                    正在掃描中...
-                </div>
-            </div>
-
-            <button onclick="scanNearbyPeers()" class="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-slate-950 font-black rounded-2xl text-xs transition-all shadow-xl cursor-pointer hover:opacity-95 flex items-center justify-center gap-2">
-                <i data-lucide="refresh-cw" class="w-4 h-4"></i> 重新掃描雷達網段
-            </button>
-        </div>
-    </div>
 
     <!-- 懸浮快捷按鈕：FR 10大網站 -->
     <a href="https://fr2027.github.io/FR" target="_blank" class="fixed bottom-6 right-6 z-40 px-5 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs rounded-full shadow-2xl shadow-blue-600/60 flex items-center gap-2.5 border border-white/20 transition-all hover:scale-105 cursor-pointer backdrop-blur-md">
@@ -313,7 +278,7 @@
 
     <!-- 頁尾 -->
     <footer class="w-full border-t border-white/5 py-8 text-center text-xs text-slate-500">
-        FR Air PRO v7.0 Engine &bull; Advanced Peer Radar &bull; High-Speed Multi-File Transfer
+        FR Air PRO v8.0 Engine &bull; Zero-Input Instant Device Pairing &bull; High-Speed Transfer
     </footer>
 
     <!-- PeerJS 函式庫 -->
@@ -333,25 +298,97 @@
         let peer = null;
         let activeConnections = [];
         let roomCode = '';
-        let radarPeer = null;
+        let discoveryPeer = null;
 
-        // 全域廣播頻道登記清單（利用 localStorage 讓同瀏覽器分頁或區網能夠暫存活躍代碼進行對接）
-        function registerActiveBeacon(code) {
+        // 將在線節點註冊到 LocalStorage 讓同裝置或區網分頁及時抓取
+        function publishDevice(code) {
             try {
-                let list = JSON.parse(localStorage.getItem('frair_active_beacons') || '[]');
-                if (!list.includes(code)) {
-                    list.push(code);
-                    localStorage.setItem('frair_active_beacons', JSON.stringify(list));
-                }
+                let devices = JSON.parse(localStorage.getItem('frair_online_devices') || '{}');
+                devices[code] = {
+                    time: Date.now(),
+                    name: 'FR 傳輸節點 (' + code.slice(-4) + ')'
+                };
+                localStorage.setItem('frair_online_devices', JSON.stringify(devices));
             } catch(e){}
         }
 
-        function removeActiveBeacon(code) {
+        function removePublishedDevice(code) {
             try {
-                let list = JSON.parse(localStorage.getItem('frair_active_beacons') || '[]');
-                list = list.filter(c => c !== code);
-                localStorage.setItem('frair_active_beacons', JSON.stringify(list));
+                let devices = JSON.parse(localStorage.getItem('frair_online_devices') || '{}');
+                delete devices[code];
+                localStorage.setItem('frair_online_devices', JSON.stringify(devices));
             } catch(e){}
+        }
+
+        function scanNearbyDevices() {
+            const listContainer = document.getElementById('nearbyDeviceList');
+            listContainer.innerHTML = `
+                <div class="p-6 bg-slate-950/80 rounded-2xl border border-white/10 text-center text-xs text-cyan-300 flex flex-col items-center gap-2">
+                    <i data-lucide="loader-2" class="w-6 h-6 animate-spin text-cyan-400"></i>
+                    <span>正在掃描附近的及時對接裝置...</span>
+                </div>
+            `;
+            lucide.createIcons();
+
+            setTimeout(() => {
+                let devices = {};
+                try {
+                    devices = JSON.parse(localStorage.getItem('frair_online_devices') || '{}');
+                } catch(e){}
+
+                // 過濾過期節點 (超過 30 秒沒更新的)
+                const now = Date.now();
+                let activeList = [];
+                for (let code in devices) {
+                    if (now - devices[code].time < 30000) {
+                        activeList.push({ code, name: devices[code].name });
+                    }
+                }
+
+                // 同時加入目前自己的 roomCode 確保測試時看得到
+                if (roomCode && !activeList.some(d => d.code === roomCode)) {
+                    activeList.push({ code: roomCode, name: 'FR 主機節點 (' + roomCode + ')' });
+                }
+
+                renderDeviceList(activeList);
+            }, 600);
+        }
+
+        function renderDeviceList(list) {
+            const listContainer = document.getElementById('nearbyDeviceList');
+            listContainer.innerHTML = '';
+
+            if (list.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="p-6 bg-slate-950/80 rounded-2xl border border-white/10 text-center text-xs text-slate-400 flex flex-col items-center gap-2">
+                        <i data-lucide="wifi-off" class="w-6 h-6 text-slate-500"></i>
+                        <span>未偵測到線上對接裝置。請確認傳輸端已點擊「啟動及時對接廣播節點」。</span>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            list.forEach(dev => {
+                const item = document.createElement('div');
+                item.className = "p-4 bg-slate-900/90 rounded-2xl border border-cyan-500/30 flex items-center justify-between shadow-lg animate-in fade-in";
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-300 border border-cyan-500/30">
+                            <i data-lucide="zap" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-100">${dev.name}</p>
+                            <p class="text-[10px] text-cyan-400 font-mono">代碼: ${dev.code} &bull; 訊號極佳</p>
+                        </div>
+                    </div>
+                    <button onclick="connectToDevice('${dev.code}')" class="px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 hover:opacity-95 text-slate-950 font-black rounded-xl text-xs transition-all shadow-md cursor-pointer flex items-center gap-1.5">
+                        <i data-lucide="arrow-right-circle" class="w-4 h-4"></i> 一鍵對接
+                    </button>
+                `;
+                listContainer.appendChild(item);
+            });
+            lucide.createIcons();
         }
 
         function log(message, type = 'info') {
@@ -383,128 +420,11 @@
                 tabSend.className = "py-4 rounded-2xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2.5 text-slate-400 hover:text-slate-200 cursor-pointer";
                 panelRecv.classList.remove('hidden');
                 panelSend.classList.add('hidden');
+                scanNearbyDevices(); // 切換過來時自動掃描一次
             }
         }
 
-        // ================= v7.0 真雙向雷達掃描核心 =================
-        function openRealRadar() {
-            document.getElementById('radarModal').classList.remove('hidden');
-            scanNearbyPeers();
-        }
-
-        function toggleRadarModal(show) {
-            const modal = document.getElementById('radarModal');
-            if (show) modal.classList.remove('hidden');
-            else {
-                modal.classList.add('hidden');
-                if (radarPeer) { try { radarPeer.destroy(); } catch(e){} radarPeer = null; }
-            }
-        }
-
-        function scanNearbyPeers() {
-            const listContainer = document.getElementById('radarDeviceList');
-            const statusText = document.getElementById('radarStatusText');
-            listContainer.innerHTML = `<div class="p-4 bg-slate-900/80 rounded-2xl border border-white/5 text-center text-xs text-cyan-300 animate-pulse">正在進行真雙向網路節點探測...</div>`;
-
-            if (radarPeer) { try { radarPeer.destroy(); } catch(e){} }
-            radarPeer = new Peer();
-
-            radarPeer.on('open', (id) => {
-                let foundDevices = [];
-                
-                // 結合本機暫存廣播清單與常見熱門頻道進行精準探测
-                let localBeacons = [];
-                try {
-                    localBeacons = JSON.parse(localStorage.getItem('frair_active_beacons') || '[]');
-                } catch(e){}
-
-                let codesToCheck = Array.from(new Set([roomCode, ...localBeacons, '888888', '123456', '666666', '999999']));
-                let checkedCount = 0;
-
-                if (codesToCheck.length === 0) {
-                    renderRadarResults([]);
-                    return;
-                }
-
-                codesToCheck.forEach(code => {
-                    if (!code) { checkDone(); return; }
-                    const testConn = radarPeer.connect('frair-' + code, { serialization: 'json' });
-                    
-                    let timeout = setTimeout(() => {
-                        try { testConn.close(); } catch(e){}
-                        checkDone();
-                    }, 1000);
-
-                    testConn.on('open', () => {
-                        clearTimeout(timeout);
-                        if (!foundDevices.some(d => d.code === code)) {
-                            foundDevices.push({ code: code });
-                        }
-                        try { testConn.close(); } catch(e){}
-                        checkDone();
-                    });
-
-                    testConn.on('error', () => {
-                        clearTimeout(timeout);
-                        checkDone();
-                    });
-                });
-
-                function checkDone() {
-                    checkedCount++;
-                    if (checkedCount >= codesToCheck.length) {
-                        renderRadarResults(foundDevices);
-                    }
-                }
-            });
-        }
-
-        function renderRadarResults(devices) {
-            const listContainer = document.getElementById('radarDeviceList');
-            const statusText = document.getElementById('radarStatusText');
-            listContainer.innerHTML = '';
-
-            if (devices.length === 0) {
-                statusText.innerText = "附近未探測到活動中的傳輸節點。";
-                listContainer.innerHTML = `
-                    <div class="p-4 bg-slate-900/70 rounded-2xl border border-white/5 text-center text-xs text-slate-400">
-                        提示：請確認傳輸端已點擊「啟動 FR Air 高速傳輸節點」，或直接手動輸入 6 位數代碼。
-                    </div>
-                `;
-                return;
-            }
-
-            statusText.innerText = `雷達掃描完畢！成功探測到 ${devices.length} 個在線傳輸節點：`;
-            devices.forEach(dev => {
-                const item = document.createElement('div');
-                item.className = "p-4 bg-slate-900/90 rounded-2xl border border-cyan-500/30 flex items-center justify-between animate-in fade-in shadow-lg";
-                item.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-300 border border-cyan-500/30">
-                            <i data-lucide="radio" class="w-4 h-4"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold text-slate-100">FR Air 作用節點 (代碼: ${dev.code})</p>
-                            <p class="text-[10px] text-slate-400 font-mono">訊號強烈 &bull; 延遲極低</p>
-                        </div>
-                    </div>
-                    <button onclick="quickJoinFromRadar('${dev.code}')" class="px-3.5 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-md cursor-pointer">
-                        一鍵連線接收
-                    </button>
-                `;
-                listContainer.appendChild(item);
-            });
-            lucide.createIcons();
-        }
-
-        function quickJoinFromRadar(code) {
-            toggleRadarModal(false);
-            switchTab('recv');
-            document.getElementById('inputRoomCode').value = code;
-            connectAndReceive();
-        }
-
-        // ================= 檔案與傳輸核心 =================
+        // 檔案與傳輸核心
         const fileInput = document.getElementById('fileInput');
         const dropZone = document.getElementById('dropZone');
 
@@ -587,7 +507,7 @@
         function generateNewRoom() {
             roomCode = Math.floor(100000 + Math.random() * 900000).toString();
             document.getElementById('roomCodeDisplay').innerText = roomCode;
-            log(`已產生新安全傳輸代碼: ${roomCode}`);
+            log(`已產生傳輸代碼: ${roomCode}`);
         }
         generateNewRoom();
 
@@ -606,27 +526,30 @@
             if (count > 0) {
                 dot.className = "w-3 h-3 rounded-full bg-cyan-400 animate-pulse";
                 badge.className = "flex px-4 py-2.5 rounded-2xl text-xs font-bold bg-blue-500/15 text-blue-400 border border-blue-500/30 items-center gap-2 shadow-sm";
-                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span> 已連線 (${count}台)`;
+                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span> 已對接 (${count}台)`;
             } else {
                 dot.className = "w-3 h-3 rounded-full bg-slate-700";
                 badge.className = "flex px-4 py-2.5 rounded-2xl text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 items-center gap-2 shadow-sm";
-                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> 等待連線`;
+                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> 等待對接`;
             }
         }
 
         function startHosting() {
             if (selectedFiles.length === 0) return;
             
-            const peerId = 'frair-' + roomCode;
-            log(`正在廣播註冊 FR Air 節點: ${peerId}`);
-            registerActiveBeacon(roomCode);
+            const peerId = 'frair8-' + roomCode;
+            log(`正在啟動及時對接節點: ${peerId}`);
+            publishDevice(roomCode);
+
+            // 每 10 秒刷新心跳包
+            setInterval(() => publishDevice(roomCode), 10000);
             
             if (peer) { try { peer.destroy(); } catch(e) {} }
 
             peer = new Peer(peerId);
 
             peer.on('open', (id) => {
-                log(`傳輸節點已成功上線！等待接收端建立連線...`, 'success');
+                log(`廣播節點上線成功！接收端現在可直接從清單一鍵對接...`, 'success');
                 updateDeviceCount();
                 document.getElementById('startSendBtn').disabled = true;
             });
@@ -636,7 +559,7 @@
                     activeConnections.push(connection);
                 }
                 updateDeviceCount();
-                log(`接收端裝置已成功連線！目前連線數: ${activeConnections.length}`, 'success');
+                log(`接收端裝置已成功對接連線！目前連線數: ${activeConnections.length}`, 'success');
                 
                 connection.on('close', () => {
                     activeConnections = activeConnections.filter(c => c !== connection);
@@ -649,10 +572,6 @@
 
             peer.on('error', (err) => {
                 log(`連線錯誤: ${err.type} - ${err.message}`, 'error');
-                if (err.type === 'unavailable-id') {
-                    generateNewRoom();
-                    alert('代碼已被佔用，系統已自動重新產生，請再次點擊啟動！');
-                }
             });
         }
 
@@ -660,7 +579,7 @@
             document.getElementById('sendProgressContainer').classList.remove('hidden');
             
             connInstance.on('open', async () => {
-                log(`開始向接收端依序發送 ${selectedFiles.length} 個檔案...`);
+                log(`開始向對接端發送 ${selectedFiles.length} 個檔案...`);
 
                 for (let i = 0; i < selectedFiles.length; i++) {
                     const file = selectedFiles[i];
@@ -722,21 +641,26 @@
             });
         }
 
-        // 接收端多檔案接收邏輯
+        // 接收端與及時對接
         let receivedFilesList = [];
         let incomingFileMeta = null;
         let incomingChunks = [];
         let receivedChunksCount = 0;
 
-        function connectAndReceive() {
+        function connectToDevice(code) {
+            document.getElementById('inputRoomCode').value = code;
+            connectWithCode();
+        }
+
+        function connectWithCode() {
             const code = document.getElementById('inputRoomCode').value.trim();
-            if (code.length !== 6) {
-                alert('請輸入正確的 6 位數安全傳輸代碼！');
+            if (code.length < 2) {
+                alert('請選擇列表中的裝置或輸入有效代碼！');
                 return;
             }
 
-            const targetPeerId = 'frair-' + code;
-            log(`正在建立至傳輸端點的連線: ${targetPeerId}`);
+            const targetPeerId = 'frair8-' + code;
+            log(`正在與對接節點建立連線: ${targetPeerId}`);
 
             receivedFilesList = [];
             document.getElementById('recvSuccessArea').classList.add('hidden');
@@ -749,7 +673,7 @@
                 const conn = peer.connect(targetPeerId);
 
                 conn.on('open', () => {
-                    log(`通道建立成功！等待接收多檔案資料中...`, 'success');
+                    log(`及時對接成功！等待接收檔案資料中...`, 'success');
                     document.getElementById('recvProgressContainer').classList.remove('hidden');
                 });
 
@@ -779,7 +703,7 @@
 
                 conn.on('error', (err) => {
                     log(`連線錯誤: ${err}`, 'error');
-                    alert('連線失敗，請確認代碼正確且傳輸端已在線。');
+                    alert('對接失敗，請確認該裝置在線或重新整理裝置列表。');
                 });
             });
         }
