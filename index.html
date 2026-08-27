@@ -59,7 +59,7 @@
         }
     </style>
 </head>
-<body class="bg-[#020617] text-slate-100 min-h-screen flex flex-col justify-between selection:bg-blue-500 selection:text-slate-950 font-sans antialiased overflow-x-hidden" oncontextmenu="return false;">
+<body class="bg-[#020617] text-slate-100 min-h-screen flex flex-col justify-between selection:bg-blue-500 selection:text-slate-950 font-sans antialiased overflow-x-hidden">
 
     <!-- 頂級背景動態流光 -->
     <div class="fixed top-[-15%] left-1/2 -translate-x-1/2 w-[1100px] h-[600px] bg-gradient-to-tr from-blue-600/25 via-indigo-600/20 to-cyan-400/15 blur-[180px] pointer-events-none rounded-full floating-element"></div>
@@ -789,7 +789,7 @@
                 container.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">目前尚無傳輸歷史紀錄</div>`;
                 return;
             }
-            container.innerHTML = '';
+            container.innerHTML = ``;
             transmissionHistory.forEach((file) => {
                 const item = document.createElement('div');
                 item.className = "p-3.5 bg-slate-900/90 rounded-2xl border border-white/5 flex items-center justify-between text-xs";
