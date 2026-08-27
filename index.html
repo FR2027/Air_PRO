@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FR Air PRO v8.5 &bull; 獨立雙軌與極速對接旗艦完整版</title>
+    <title>FR Air PRO v8.6 &bull; 獨立雙軌與極速對接旗艦修復版</title>
     <!-- Favicon -->
     <link rel="icon" type="image/jpeg" href="https://i.ibb.co/wNmcM1hp/FRAIRPRO.jpg">
     <!-- Tailwind CSS v4 CDN -->
@@ -75,9 +75,9 @@
                 <div>
                     <div class="flex items-center gap-2">
                         <h1 class="font-black text-xl tracking-tight bg-gradient-to-r from-blue-400 via-indigo-200 to-cyan-300 bg-clip-text text-transparent">FR Air PRO</h1>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">v8.5 旗艦完整版</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">v8.6 旗艦修復版</span>
                     </div>
-                    <p class="text-[11px] text-slate-400 font-medium tracking-wide">獨立雙軌 &bull; 歷史紀錄 &bull; 密碼防護 &bull; 即時測速</p>
+                    <p class="text-[11px] text-slate-400 font-medium tracking-wide">獨立雙軌 &bull; P2P直連修復 &bull; 即時除錯</p>
                 </div>
             </div>
             <div class="flex items-center gap-3">
@@ -174,7 +174,7 @@
                             <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">接收端連線輸入</span>
                             <div class="flex gap-2 mt-2">
                                 <input type="text" id="inputCodeStd" maxlength="6" placeholder="輸入6位數代碼" class="w-full py-2 px-3 bg-slate-900 border border-white/10 rounded-xl text-center text-lg font-bold font-mono tracking-widest text-blue-400 focus:outline-none">
-                                <button onclick="connectStdRecv()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl shrink-0 cursor-pointer">連線</button>
+                                <button onclick="connectStdRecv()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shrink-0 cursor-pointer">連線</button>
                             </div>
                         </div>
                     </div>
@@ -308,7 +308,7 @@
                         <i data-lucide="settings" class="w-5 h-5 text-blue-400"></i>
                         FR Air PRO 進階參數設定
                     </h2>
-                    <span class="text-xs text-slate-400 font-mono">v8.5 Core</span>
+                    <span class="text-xs text-slate-400 font-mono">v8.6 Core</span>
                 </div>
                 <div class="flex flex-col gap-4 text-xs">
                     <div class="flex items-center justify-between p-4 bg-slate-900/80 rounded-2xl border border-white/5">
@@ -320,10 +320,10 @@
                     </div>
                     <div class="flex items-center justify-between p-4 bg-slate-900/80 rounded-2xl border border-white/5">
                         <div>
-                            <p class="font-bold text-slate-200">網路信號伺服器 (PeerJS Cloud)</p>
-                            <p class="text-slate-400 text-[11px] mt-0.5">預設採用高穩定公共中繼站，確保跨網域互通</p>
+                            <p class="font-bold text-slate-200">網路信號伺服器 (PeerJS Cloud + STUN)</p>
+                            <p class="text-slate-400 text-[11px] mt-0.5">內建 Google STUN 伺服器，大幅提升跨網路穿透成功率</p>
                         </div>
-                        <span class="px-3 py-1 rounded-xl bg-cyan-500/20 text-cyan-300 font-mono font-bold">連線正常</span>
+                        <span class="px-3 py-1 rounded-xl bg-cyan-500/20 text-cyan-300 font-mono font-bold">強化中</span>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-slate-900/80 rounded-2xl border border-white/5">
                         <div>
@@ -345,7 +345,7 @@
                 <button onclick="clearLogs()" class="hover:text-slate-200 cursor-pointer transition-colors px-2.5 py-1 rounded-lg bg-white/5">清除日誌</button>
             </div>
             <div id="logBox" class="h-28 overflow-y-auto custom-scrollbar font-mono text-[11px] text-slate-400 flex flex-col gap-1.5 p-3 bg-slate-950/90 rounded-2xl border border-white/5">
-                <div>[FR Air PRO v8.5] 系統初始化完成。歷史紀錄與進階雙軌機制全功能啟動。</div>
+                <div>[FR Air PRO v8.6] 系統初始化完成。P2P 點對點連線修正模組已加載。</div>
             </div>
         </div>
 
@@ -359,7 +359,7 @@
 
     <!-- 頁尾 -->
     <footer class="w-full border-t border-white/5 py-8 text-center text-xs text-slate-500">
-        FR Air PRO v8.5 Engine &bull; Full-Feature Dual-Track &bull; High-Speed Instant Pairing
+        FR Air PRO v8.6 Engine &bull; P2P Direct Connect Fixed &bull; High-Speed Instant Pairing
     </footer>
 
     <!-- PeerJS 函式庫 -->
@@ -374,6 +374,16 @@
         let stdRoomCode = '';
         let twoDRoomCode = '';
         let transmissionHistory = [];
+
+        // PeerJS 穩定設定（加入公開 STUN 伺服器提高跨網域連線成功率）
+        const peerConfig = {
+            config: {
+                'iceServers': [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' }
+                ]
+            }
+        };
 
         function log(message, type = 'info') {
             const box = document.getElementById('logBox');
@@ -497,29 +507,38 @@
 
         function startStdHosting() {
             if (stdFiles.length === 0) return;
-            const peerId = 'frair-std-' + stdRoomCode;
-            log(`[標準] 啟動發送節點: ${peerId}`);
+            // 修正 ID 格式，加入時間戳記或專屬字首確保全網唯一
+            const peerId = 'frair-pro-std-' + stdRoomCode;
+            log(`[標準] 啟動發送節點 ID: ${peerId}`);
             if (peer) { try { peer.destroy(); } catch(e){} }
-            peer = new Peer(peerId);
+            
+            peer = new Peer(peerId, peerConfig);
 
-            peer.on('open', () => {
-                log(`[標準] 節點上線成功，等待接收端連線...`, 'success');
+            peer.on('open', (id) => {
+                log(`[標準] 發送節點已成功上線！代碼: ${stdRoomCode} (ID: ${id})`, 'success');
                 document.getElementById('startSendBtnStd').disabled = true;
-                updateConnectionBadge('連線就緒', 'bg-blue-500');
+                updateConnectionBadge('發送端就緒', 'bg-blue-500');
             });
+
             peer.on('connection', (conn) => {
-                log(`[標準] 接收端已連線，開始傳輸...`, 'success');
+                log(`[標準] 接收端已成功連線！建立通道中...`, 'success');
                 updateConnectionBadge('傳輸中', 'bg-cyan-400 animate-pulse');
                 setupSenderTransfer(conn, stdFiles, 'Std');
             });
-            peer.on('error', (err) => { log(`[標準] 錯誤: ${err.message}`, 'error'); });
+
+            peer.on('error', (err) => { 
+                log(`[標準] PeerJS 錯誤: ${err.type} - ${err.message}`, 'error'); 
+                if(err.type === 'unavailable-id') {
+                    alert('此代碼已被佔用，請重新產生代碼後再試！');
+                }
+            });
         }
 
         function connectStdRecv() {
             const code = document.getElementById('inputCodeStd').value.trim();
             if (code.length !== 6) { alert('請輸入完整 6 位數代碼'); return; }
-            const targetId = 'frair-std-' + code;
-            log(`[標準] 連線至: ${targetId}`);
+            const targetId = 'frair-pro-std-' + code;
+            log(`[標準] 正在呼叫發送端: ${targetId}`);
             initReceiver(targetId, 'Std');
         }
 
@@ -577,23 +596,26 @@
 
         function start2dHosting() {
             if (twoDFiles.length === 0) return;
-            const peerId = 'frair-2d-' + twoDRoomCode;
-            log(`[2位數對接] 啟動一次性對接節點: ${peerId}`);
+            const peerId = 'frair-pro-2d-' + twoDRoomCode;
+            log(`[2位數對接] 啟動一次性對接節點 ID: ${peerId}`);
             if (peer) { try { peer.destroy(); } catch(e){} }
-            peer = new Peer(peerId);
+            
+            peer = new Peer(peerId, peerConfig);
 
-            peer.on('open', () => {
-                log(`[2位數對接] 節點上線成功，等待接收端對接...`, 'success');
+            peer.on('open', (id) => {
+                log(`[2位數對接] 節點已上線！代碼: ${twoDRoomCode} (ID: ${id})`, 'success');
                 document.getElementById('startSendBtn2d').disabled = true;
                 updateConnectionBadge('對接就緒', 'bg-cyan-400');
             });
+
             peer.on('connection', (conn) => {
-                log(`[2位數對接] 接收端已對接，開始高速傳輸...`, 'success');
+                log(`[2位數對接] 接收端已對接成功！開始高速傳輸...`, 'success');
                 updateConnectionBadge('極速傳輸中', 'bg-blue-500 animate-pulse');
                 setupSenderTransfer(conn, twoDFiles, '2d');
             });
+
             peer.on('error', (err) => { 
-                log(`[2位數對接] 錯誤: ${err.message}`, 'error');
+                log(`[2位數對接] 錯誤: ${err.type} - ${err.message}`, 'error');
                 if (err.type === 'unavailable-id') {
                     generate2dRoom();
                     alert('此 2 位數代碼剛被佔用，系統已自動重新產生，請再次點擊啟動！');
@@ -605,7 +627,7 @@
             let code = document.getElementById('inputCode2d').value.trim();
             if (code.length === 1) code = '0' + code;
             if (code.length !== 2) { alert('請輸入正確的 2 位數代碼 (00-99)'); return; }
-            const targetId = 'frair-2d-' + code;
+            const targetId = 'frair-pro-2d-' + code;
             log(`[2位數對接] 正在對接至: ${targetId}`);
             initReceiver(targetId, '2d');
         }
@@ -693,10 +715,13 @@
             document.getElementById('recvSuccessArea').classList.add('hidden');
 
             if (peer) { try { peer.destroy(); } catch(e){} }
-            peer = new Peer();
+            
+            // 接收端初始化時也帶入 STUN 設定
+            peer = new Peer(undefined, peerConfig);
 
             peer.on('open', () => {
-                const conn = peer.connect(targetPeerId);
+                log(`接收端就緒，正在建立至 ${targetPeerId} 的安全通道...`);
+                const conn = peer.connect(targetPeerId, { reliable: true });
                 const containerId = `progressContainer${suffix}`;
                 const barId = `progressBar${suffix}`;
                 const percentId = `progressPercent${suffix}`;
@@ -704,9 +729,9 @@
                 const speedId = `progressSpeed${suffix}`;
 
                 conn.on('open', () => {
-                    log(`通道建立成功，等待接收檔案資料...`, 'success');
+                    log(`通道建立成功！等待發送端傳送檔案...`, 'success');
                     document.getElementById(containerId).classList.remove('hidden');
-                    updateConnectionBadge('接收連線中', 'bg-cyan-400 animate-pulse');
+                    updateConnectionBadge('已連線等待傳輸', 'bg-cyan-400 animate-pulse');
                 });
 
                 let startTime = Date.now();
@@ -737,7 +762,14 @@
                     }
                 });
 
-                conn.on('error', (err) => { log(`接收連線錯誤: ${err}`, 'error'); alert('連線失敗，請確認代碼與發送端狀態。'); });
+                conn.on('error', (err) => { 
+                    log(`接收連線錯誤: ${JSON.stringify(err)}`, 'error'); 
+                    alert('連線失敗！請確認發送端已點擊「啟動發送節點」，且代碼完全正確。'); 
+                });
+            });
+
+            peer.on('error', (err) => {
+                log(`Peer 初始化錯誤: ${err.type}`, 'error');
             });
         }
 
