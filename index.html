@@ -375,8 +375,12 @@
         let twoDRoomCode = '';
         let transmissionHistory = [];
 
-        // PeerJS 穩定設定（加入公開 STUN 伺服器提高跨網域連線成功率）
+        // 【已修正】完整帶有 Cloud 主機與 STUN 參數的 PeerJS 設定
         const peerConfig = {
+            host: '0.peerjs.com',
+            port: 443,
+            path: '/',
+            secure: true,
             config: {
                 'iceServers': [
                     { urls: 'stun:stun.l.google.com:19302' },
@@ -507,7 +511,6 @@
 
         function startStdHosting() {
             if (stdFiles.length === 0) return;
-            // 修正 ID 格式，加入時間戳記或專屬字首確保全網唯一
             const peerId = 'frair-pro-std-' + stdRoomCode;
             log(`[標準] 啟動發送節點 ID: ${peerId}`);
             if (peer) { try { peer.destroy(); } catch(e){} }
@@ -716,7 +719,6 @@
 
             if (peer) { try { peer.destroy(); } catch(e){} }
             
-            // 接收端初始化時也帶入 STUN 設定
             peer = new Peer(undefined, peerConfig);
 
             peer.on('open', () => {
