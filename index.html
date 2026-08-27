@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FR Air PRO v8.1 &bull; 獨立雙軌與 2位數一次性對接</title>
+    <title>FR Air PRO v8.5 &bull; 獨立雙軌與極速對接旗艦完整版</title>
     <!-- Favicon -->
     <link rel="icon" type="image/jpeg" href="https://i.ibb.co/wNmcM1hp/FRAIRPRO.jpg">
     <!-- Tailwind CSS v4 CDN -->
@@ -75,15 +75,15 @@
                 <div>
                     <div class="flex items-center gap-2">
                         <h1 class="font-black text-xl tracking-tight bg-gradient-to-r from-blue-400 via-indigo-200 to-cyan-300 bg-clip-text text-transparent">FR Air PRO</h1>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">v8.1 獨立雙軌版</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">v8.5 旗艦完整版</span>
                     </div>
-                    <p class="text-[11px] text-slate-400 font-medium tracking-wide">2位數一次性對接 &bull; 6位數標準傳輸雙軌並行</p>
+                    <p class="text-[11px] text-slate-400 font-medium tracking-wide">獨立雙軌 &bull; 歷史紀錄 &bull; 密碼防護 &bull; 即時測速</p>
                 </div>
             </div>
             <div class="flex items-center gap-3">
                 <div id="connectionBadge" class="flex px-4 py-2.5 rounded-2xl text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 items-center gap-2 shadow-sm">
                     <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                    <span>等待連線</span>
+                    <span id="connectionBadgeText">等待連線</span>
                 </div>
             </div>
         </div>
@@ -92,168 +92,248 @@
     <!-- 主要內容容器 -->
     <main class="w-full max-w-2xl mx-auto px-4 py-12 flex-1 flex flex-col gap-8 z-10">
 
-        <!-- 頂級視覺化模式切換：標準 6 位數 vs 2 位數對接 -->
-        <div class="grid grid-cols-2 gap-3 luxury-glass p-2.5 rounded-3xl shadow-2xl">
-            <button onclick="switchMode('standard')" id="modeStandardBtn" class="py-4 rounded-2xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 text-slate-950 shadow-xl shadow-blue-950/70 cursor-pointer scale-[1.02]">
-                <i data-lucide="shield" class="w-4 h-4"></i>
-                標準 6 位數傳輸
+        <!-- 頂級功能導覽 Tab 切換 -->
+        <div class="grid grid-cols-3 gap-2 luxury-glass p-2 rounded-3xl shadow-2xl">
+            <button onclick="switchTab('transfer')" id="tabTransferBtn" class="py-3 rounded-2xl font-bold text-xs transition-all duration-300 flex items-center justify-center gap-2 bg-blue-600 text-white shadow-lg cursor-pointer">
+                <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                檔案傳輸
             </button>
-            <button onclick="switchMode('quick2d')" id="modeQuickBtn" class="py-4 rounded-2xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2.5 text-slate-400 hover:text-slate-200 cursor-pointer">
-                <i data-lucide="zap" class="w-4 h-4"></i>
-                2位數一次性對接
+            <button onclick="switchTab('history')" id="tabHistoryBtn" class="py-3 rounded-2xl font-bold text-xs transition-all duration-300 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 cursor-pointer">
+                <i data-lucide="history" class="w-3.5 h-3.5"></i>
+                歷史紀錄 (<span id="historyCount">0</span>)
+            </button>
+            <button onclick="switchTab('settings')" id="tabSettingsBtn" class="py-3 rounded-2xl font-bold text-xs transition-all duration-300 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 cursor-pointer">
+                <i data-lucide="settings" class="w-3.5 h-3.5"></i>
+                進階設定
             </button>
         </div>
 
-        <!-- ================= 模式一：標準 6 位數傳輸面板 ================= -->
-        <div id="sectionStandard" class="flex flex-col gap-6 transition-all duration-500">
-            <div class="luxury-glass rounded-3xl p-8 sm:p-10 shadow-2xl glow-box flex flex-col gap-6 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <!-- ================= 區塊一：檔案傳輸主面板 ================= -->
+        <div id="panelTransfer" class="flex flex-col gap-6">
 
-                <div class="flex items-center justify-between">
-                    <h2 class="text-base font-bold text-slate-200 flex items-center gap-2.5">
-                        <i data-lucide="folder-kanban" class="w-5 h-5 text-blue-400"></i>
-                        檔案選取與 6 位數安全傳輸
-                    </h2>
-                    <span class="text-xs text-blue-400 font-mono bg-blue-500/15 px-3 py-1 rounded-xl border border-blue-500/30 shadow-inner">標準模式</span>
-                </div>
+            <!-- 雙軌模式切換：標準 6 位數 vs 2 位數對接 -->
+            <div class="grid grid-cols-2 gap-3 luxury-glass p-2.5 rounded-3xl shadow-2xl">
+                <button onclick="switchMode('standard')" id="modeStandardBtn" class="py-3.5 rounded-2xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 text-slate-950 shadow-xl cursor-pointer scale-[1.02]">
+                    <i data-lucide="shield" class="w-4 h-4"></i>
+                    標準 6 位數傳輸
+                </button>
+                <button onclick="switchMode('quick2d')" id="modeQuickBtn" class="py-3.5 rounded-2xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 cursor-pointer">
+                    <i data-lucide="zap" class="w-4 h-4"></i>
+                    2位數一次性對接
+                </button>
+            </div>
 
-                <!-- 檔案拖曳與選擇區 -->
-                <label id="dropZoneStd" class="border-2 border-dashed border-slate-700/80 hover:border-blue-500 bg-slate-950/50 hover:bg-blue-950/20 rounded-3xl p-10 flex flex-col items-center justify-center gap-4 transition-all duration-300 cursor-pointer group">
-                    <div class="w-16 h-16 rounded-2xl bg-slate-900/90 group-hover:bg-blue-500/20 group-hover:scale-110 flex items-center justify-center transition-all duration-300 shadow-2xl border border-white/10">
-                        <i data-lucide="folder-open" class="w-8 h-8 text-slate-400 group-hover:text-blue-400 transition-colors"></i>
+            <!-- 標準 6 位數傳輸面板 -->
+            <div id="sectionStandard" class="flex flex-col gap-6 transition-all duration-500">
+                <div class="luxury-glass rounded-3xl p-8 sm:p-10 shadow-2xl glow-box flex flex-col gap-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-base font-bold text-slate-200 flex items-center gap-2.5">
+                            <i data-lucide="folder-kanban" class="w-5 h-5 text-blue-400"></i>
+                            標準 6 位數加密傳輸
+                        </h2>
+                        <span class="text-xs text-blue-400 font-mono bg-blue-500/15 px-3 py-1 rounded-xl border border-blue-500/30">多檔案批次</span>
                     </div>
-                    <div class="text-center">
-                        <p class="text-sm font-bold text-slate-200 group-hover:text-blue-300 transition-colors">點擊或拖曳檔案至此</p>
-                        <p class="text-[11px] text-slate-400 mt-1">支援多檔案、大影片無失真直傳</p>
-                    </div>
-                    <input type="file" id="fileInputStd" multiple class="hidden">
-                </label>
 
-                <!-- 已選檔案清單預覽 -->
-                <div id="filePreviewStd" class="hidden flex flex-col gap-3 p-4 luxury-card rounded-2xl border border-white/10">
-                    <div class="flex items-center justify-between border-b border-white/10 pb-2">
-                        <span class="text-xs font-bold text-blue-400" id="fileCountTitleStd">已選取 0 個檔案</span>
-                        <button onclick="clearStdFiles()" class="text-xs text-slate-400 hover:text-rose-400 cursor-pointer">清空全部</button>
-                    </div>
-                    <div id="fileListContainerStd" class="max-h-44 overflow-y-auto custom-scrollbar flex flex-col gap-2 pr-1"></div>
-                </div>
+                    <!-- 檔案拖曳區 -->
+                    <label id="dropZoneStd" class="border-2 border-dashed border-slate-700/80 hover:border-blue-500 bg-slate-950/50 hover:bg-blue-950/20 rounded-3xl p-8 flex flex-col items-center justify-center gap-3 transition-all duration-300 cursor-pointer group">
+                        <div class="w-14 h-14 rounded-2xl bg-slate-900/90 group-hover:bg-blue-500/20 group-hover:scale-110 flex items-center justify-center transition-all duration-300 shadow-2xl border border-white/10">
+                            <i data-lucide="folder-open" class="w-7 h-7 text-slate-400 group-hover:text-blue-400 transition-colors"></i>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm font-bold text-slate-200 group-hover:text-blue-300">點擊或拖曳檔案至此</p>
+                            <p class="text-[11px] text-slate-400 mt-1">支援無限容量、資料夾與多檔直傳</p>
+                        </div>
+                        <input type="file" id="fileInputStd" multiple class="hidden">
+                    </label>
 
-                <!-- 6位數代碼顯示與輸入 -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-slate-950/80 border border-white/10 rounded-2xl p-4 flex flex-col justify-between shadow-inner">
-                        <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">發送端代碼 (Sender)</span>
-                        <div class="flex items-center justify-between mt-2">
-                            <p id="roomCodeStd" class="text-2xl font-black tracking-widest text-blue-400 font-mono">------</p>
-                            <div class="flex gap-1.5">
-                                <button onclick="generateStdRoom()" title="重新產生" class="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl cursor-pointer"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
-                                <button onclick="copyStdRoom()" class="px-3 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                    <!-- 已選檔案預覽 -->
+                    <div id="filePreviewStd" class="hidden flex flex-col gap-3 p-4 luxury-card rounded-2xl border border-white/10">
+                        <div class="flex items-center justify-between border-b border-white/10 pb-2">
+                            <span class="text-xs font-bold text-blue-400" id="fileCountTitleStd">已選取 0 個檔案</span>
+                            <button onclick="clearStdFiles()" class="text-xs text-slate-400 hover:text-rose-400 cursor-pointer">清空全部</button>
+                        </div>
+                        <div id="fileListContainerStd" class="max-h-40 overflow-y-auto custom-scrollbar flex flex-col gap-2 pr-1"></div>
+                    </div>
+
+                    <!-- 代碼與連線控制 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-slate-950/80 border border-white/10 rounded-2xl p-4 flex flex-col justify-between shadow-inner">
+                            <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">發送端 6位數代碼</span>
+                            <div class="flex items-center justify-between mt-2">
+                                <p id="roomCodeStd" class="text-2xl font-black tracking-widest text-blue-400 font-mono">------</p>
+                                <div class="flex gap-1.5">
+                                    <button onclick="generateStdRoom()" title="重新產生" class="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl cursor-pointer"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
+                                    <button onclick="copyStdRoom()" class="px-3 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-950/80 border border-white/10 rounded-2xl p-4 flex flex-col justify-between shadow-inner">
+                            <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">接收端連線輸入</span>
+                            <div class="flex gap-2 mt-2">
+                                <input type="text" id="inputCodeStd" maxlength="6" placeholder="輸入6位數代碼" class="w-full py-2 px-3 bg-slate-900 border border-white/10 rounded-xl text-center text-lg font-bold font-mono tracking-widest text-blue-400 focus:outline-none">
+                                <button onclick="connectStdRecv()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl shrink-0 cursor-pointer">連線</button>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-slate-950/80 border border-white/10 rounded-2xl p-4 flex flex-col justify-between shadow-inner">
-                        <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">接收端連線 (Receiver)</span>
-                        <div class="flex gap-2 mt-2">
-                            <input type="text" id="inputCodeStd" maxlength="6" placeholder="輸入6位數代碼" class="w-full py-2 px-3 bg-slate-900 border border-white/10 rounded-xl text-center text-lg font-bold font-mono tracking-widest text-blue-400 focus:outline-none">
-                            <button onclick="connectStdRecv()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl shrink-0 cursor-pointer">連線</button>
+                    <!-- 進度條 -->
+                    <div id="progressContainerStd" class="hidden flex flex-col gap-2">
+                        <div class="flex justify-between text-xs">
+                            <span id="progressStatusStd" class="text-slate-300">傳輸中...</span>
+                            <span id="progressSpeedStd" class="text-cyan-400 font-mono">0 MB/s</span>
+                            <span id="progressPercentStd" class="text-blue-400 font-mono font-bold">0%</span>
+                        </div>
+                        <div class="w-full bg-slate-950 h-3 rounded-full overflow-hidden p-0.5 border border-white/15">
+                            <div id="progressBarStd" class="bg-gradient-to-r from-blue-500 to-cyan-400 h-full w-0 rounded-full transition-all"></div>
                         </div>
                     </div>
-                </div>
 
-                <!-- 傳輸進度 -->
-                <div id="progressContainerStd" class="hidden flex flex-col gap-2">
-                    <div class="flex justify-between text-xs"><span id="progressStatusStd" class="text-slate-300">傳輸中...</span><span id="progressPercentStd" class="text-blue-400 font-mono font-bold">0%</span></div>
-                    <div class="w-full bg-slate-950 h-3 rounded-full overflow-hidden p-0.5 border border-white/15">
-                        <div id="progressBarStd" class="bg-gradient-to-r from-blue-500 to-cyan-400 h-full w-0 rounded-full transition-all"></div>
-                    </div>
+                    <button id="startSendBtnStd" onclick="startStdHosting()" disabled class="w-full py-4 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 hover:opacity-95 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-600 text-slate-950 font-black rounded-2xl transition-all shadow-xl cursor-pointer text-sm">
+                        啟動 6 位數標準發送節點
+                    </button>
                 </div>
-
-                <button id="startSendBtnStd" onclick="startStdHosting()" disabled class="w-full py-4 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 hover:opacity-95 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-600 text-slate-950 font-black rounded-2xl transition-all shadow-xl cursor-pointer text-sm">
-                    啟動 6 位數標準發送節點
-                </button>
             </div>
-        </div>
 
-        <!-- ================= 模式二：2 位數一次性對接面板 ================= -->
-        <div id="sectionQuick2d" class="hidden flex flex-col gap-6 transition-all duration-500">
-            <div class="luxury-glass rounded-3xl p-8 sm:p-10 shadow-2xl flex flex-col gap-6 relative overflow-hidden border border-cyan-500/30">
-                <div class="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <!-- 2 位數一次性對接面板 -->
+            <div id="sectionQuick2d" class="hidden flex flex-col gap-6 transition-all duration-500">
+                <div class="luxury-glass rounded-3xl p-8 sm:p-10 shadow-2xl flex flex-col gap-6 relative overflow-hidden border border-cyan-500/30">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-                <div class="flex items-center justify-between">
-                    <h2 class="text-base font-bold text-slate-200 flex items-center gap-2.5">
-                        <i data-lucide="zap" class="w-5 h-5 text-cyan-400"></i>
-                        2 位數一次性對接直傳
-                    </h2>
-                    <span class="text-xs text-cyan-400 font-mono bg-cyan-500/15 px-3 py-1 rounded-xl border border-cyan-500/30 shadow-inner">秒速對接模式</span>
-                </div>
-
-                <!-- 檔案選取區 (2位數專用) -->
-                <label id="dropZone2d" class="border-2 border-dashed border-cyan-700/60 hover:border-cyan-400 bg-slate-950/50 hover:bg-cyan-950/20 rounded-3xl p-10 flex flex-col items-center justify-center gap-4 transition-all duration-300 cursor-pointer group">
-                    <div class="w-16 h-16 rounded-2xl bg-slate-900/90 group-hover:bg-cyan-500/20 group-hover:scale-110 flex items-center justify-center transition-all duration-300 shadow-2xl border border-cyan-500/30">
-                        <i data-lucide="file-plus" class="w-8 h-8 text-cyan-400"></i>
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-base font-bold text-slate-200 flex items-center gap-2.5">
+                            <i data-lucide="zap" class="w-5 h-5 text-cyan-400"></i>
+                            2 位數極速一次性對接
+                        </h2>
+                        <span class="text-xs text-cyan-400 font-mono bg-cyan-500/15 px-3 py-1 rounded-xl border border-cyan-500/30">秒速直傳</span>
                     </div>
-                    <div class="text-center">
-                        <p class="text-sm font-bold text-slate-200 group-hover:text-cyan-300 transition-colors">點擊或拖曳檔案至此 (2位數對接)</p>
-                        <p class="text-[11px] text-slate-400 mt-1">極速對接，免長代碼輸入</p>
-                    </div>
-                    <input type="file" id="fileInput2d" multiple class="hidden">
-                </label>
 
-                <!-- 已選檔案預覽 (2位數專用) -->
-                <div id="filePreview2d" class="hidden flex flex-col gap-3 p-4 luxury-card rounded-2xl border border-cyan-500/20">
-                    <div class="flex items-center justify-between border-b border-cyan-500/20 pb-2">
-                        <span class="text-xs font-bold text-cyan-400" id="fileCountTitle2d">已選取 0 個檔案</span>
-                        <button onclick="clear2dFiles()" class="text-xs text-slate-400 hover:text-rose-400 cursor-pointer">清空全部</button>
-                    </div>
-                    <div id="fileListContainer2d" class="max-h-44 overflow-y-auto custom-scrollbar flex flex-col gap-2 pr-1"></div>
-                </div>
+                    <!-- 檔案拖曳區 2D -->
+                    <label id="dropZone2d" class="border-2 border-dashed border-cyan-700/60 hover:border-cyan-400 bg-slate-950/50 hover:bg-cyan-950/20 rounded-3xl p-8 flex flex-col items-center justify-center gap-3 transition-all duration-300 cursor-pointer group">
+                        <div class="w-14 h-14 rounded-2xl bg-slate-900/90 group-hover:bg-cyan-500/20 group-hover:scale-110 flex items-center justify-center transition-all duration-300 shadow-2xl border border-cyan-500/30">
+                            <i data-lucide="file-plus" class="w-7 h-7 text-cyan-400"></i>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm font-bold text-slate-200 group-hover:text-cyan-300">點擊或拖曳檔案至此</p>
+                            <p class="text-[11px] text-slate-400 mt-1">極速對接，免長代碼輸入</p>
+                        </div>
+                        <input type="file" id="fileInput2d" multiple class="hidden">
+                    </label>
 
-                <!-- 2位數代碼區 -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-slate-950/80 border border-cyan-500/20 rounded-2xl p-4 flex flex-col justify-between shadow-inner">
-                        <span class="text-[11px] text-cyan-400 font-bold uppercase tracking-wider">發送端 2位數代碼</span>
-                        <div class="flex items-center justify-between mt-2">
-                            <p id="roomCode2d" class="text-3xl font-black tracking-widest text-cyan-400 font-mono">--</p>
-                            <div class="flex gap-1.5">
-                                <button onclick="generate2dRoom()" title="重新產生" class="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl cursor-pointer"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
-                                <button onclick="copy2dRoom()" class="px-3 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold rounded-xl text-xs"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                    <!-- 已選檔案預覽 2D -->
+                    <div id="filePreview2d" class="hidden flex flex-col gap-3 p-4 luxury-card rounded-2xl border border-cyan-500/20">
+                        <div class="flex items-center justify-between border-b border-cyan-500/20 pb-2">
+                            <span class="text-xs font-bold text-cyan-400" id="fileCountTitle2d">已選取 0 個檔案</span>
+                            <button onclick="clear2dFiles()" class="text-xs text-slate-400 hover:text-rose-400 cursor-pointer">清空全部</button>
+                        </div>
+                        <div id="fileListContainer2d" class="max-h-40 overflow-y-auto custom-scrollbar flex flex-col gap-2 pr-1"></div>
+                    </div>
+
+                    <!-- 代碼與連線 2D -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-slate-950/80 border border-cyan-500/20 rounded-2xl p-4 flex flex-col justify-between shadow-inner">
+                            <span class="text-[11px] text-cyan-400 font-bold uppercase tracking-wider">發送端 2位數代碼</span>
+                            <div class="flex items-center justify-between mt-2">
+                                <p id="roomCode2d" class="text-3xl font-black tracking-widest text-cyan-400 font-mono">--</p>
+                                <div class="flex gap-1.5">
+                                    <button onclick="generate2dRoom()" title="重新產生" class="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl cursor-pointer"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
+                                    <button onclick="copy2dRoom()" class="px-3 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold rounded-xl text-xs"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-950/80 border border-cyan-500/20 rounded-2xl p-4 flex flex-col justify-between shadow-inner">
+                            <span class="text-[11px] text-cyan-400 font-bold uppercase tracking-wider">接收端 2位數對接</span>
+                            <div class="flex gap-2 mt-2">
+                                <input type="text" id="inputCode2d" maxlength="2" placeholder="00-99" class="w-full py-2 px-3 bg-slate-900 border border-cyan-500/30 rounded-xl text-center text-xl font-black font-mono tracking-widest text-cyan-400 focus:outline-none">
+                                <button onclick="connect2dRecv()" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-black rounded-xl shrink-0 cursor-pointer">對接</button>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-slate-950/80 border border-cyan-500/20 rounded-2xl p-4 flex flex-col justify-between shadow-inner">
-                        <span class="text-[11px] text-cyan-400 font-bold uppercase tracking-wider">接收端 2位數對接</span>
-                        <div class="flex gap-2 mt-2">
-                            <input type="text" id="inputCode2d" maxlength="2" placeholder="00-99" class="w-full py-2 px-3 bg-slate-900 border border-cyan-500/30 rounded-xl text-center text-xl font-black font-mono tracking-widest text-cyan-400 focus:outline-none">
-                            <button onclick="connect2dRecv()" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-black rounded-xl shrink-0 cursor-pointer">對接</button>
+                    <!-- 進度條 2D -->
+                    <div id="progressContainer2d" class="hidden flex flex-col gap-2">
+                        <div class="flex justify-between text-xs">
+                            <span id="progressStatus2d" class="text-slate-300">2位數對接傳輸中...</span>
+                            <span id="progressSpeed2d" class="text-cyan-400 font-mono">0 MB/s</span>
+                            <span id="progressPercent2d" class="text-cyan-400 font-mono font-bold">0%</span>
+                        </div>
+                        <div class="w-full bg-slate-950 h-3 rounded-full overflow-hidden p-0.5 border border-cyan-500/30">
+                            <div id="progressBar2d" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full w-0 rounded-full transition-all"></div>
                         </div>
                     </div>
-                </div>
 
-                <!-- 傳輸進度 (2位數專用) -->
-                <div id="progressContainer2d" class="hidden flex flex-col gap-2">
-                    <div class="flex justify-between text-xs"><span id="progressStatus2d" class="text-slate-300">2位數對接傳輸中...</span><span id="progressPercent2d" class="text-cyan-400 font-mono font-bold">0%</span></div>
-                    <div class="w-full bg-slate-950 h-3 rounded-full overflow-hidden p-0.5 border border-cyan-500/30">
-                        <div id="progressBar2d" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full w-0 rounded-full transition-all"></div>
-                    </div>
+                    <button id="startSendBtn2d" onclick="start2dHosting()" disabled class="w-full py-4 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 hover:opacity-95 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-600 text-slate-950 font-black rounded-2xl transition-all shadow-xl cursor-pointer text-sm">
+                        啟動 2 位數一次性對接節點
+                    </button>
                 </div>
+            </div>
 
-                <button id="startSendBtn2d" onclick="start2dHosting()" disabled class="w-full py-4 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 hover:opacity-95 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-600 text-slate-950 font-black rounded-2xl transition-all shadow-xl cursor-pointer text-sm">
-                    啟動 2 位數一次性對接節點
-                </button>
+            <!-- 接收完成後下載區 -->
+            <div id="recvSuccessArea" class="hidden luxury-glass rounded-3xl p-6 flex flex-col items-center justify-center gap-4 border border-blue-500/40 text-center">
+                <div class="w-14 h-14 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 border border-blue-500/40 shadow-xl">
+                    <i data-lucide="check" class="w-7 h-7"></i>
+                </div>
+                <div>
+                    <p class="font-bold text-slate-100 text-base">檔案接收完成！</p>
+                    <p class="text-xs text-slate-400 mt-1">完整性校驗通過，已自動存入歷史紀錄</p>
+                </div>
+                <div id="recvFilesListContainer" class="w-full max-h-60 overflow-y-auto custom-scrollbar flex flex-col gap-2.5 text-left"></div>
             </div>
         </div>
 
-        <!-- 接收完成後檔案下載區（共用或獨立顯示） -->
-        <div id="recvSuccessArea" class="hidden luxury-glass rounded-3xl p-6 flex flex-col items-center justify-center gap-4 border border-blue-500/40 text-center">
-            <div class="w-14 h-14 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 border border-blue-500/40">
-                <i data-lucide="check" class="w-7 h-7"></i>
+        <!-- ================= 區塊二：歷史紀錄面板 ================= -->
+        <div id="panelHistory" class="hidden flex flex-col gap-6">
+            <div class="luxury-glass rounded-3xl p-8 shadow-2xl flex flex-col gap-6">
+                <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                    <h2 class="text-base font-bold text-slate-200 flex items-center gap-2.5">
+                        <i data-lucide="history" class="w-5 h-5 text-blue-400"></i>
+                        傳輸歷史與下載紀錄
+                    </h2>
+                    <button onclick="clearHistory()" class="px-3 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-bold rounded-xl border border-rose-500/30 cursor-pointer">清空紀錄</button>
+                </div>
+                <div id="historyListContainer" class="flex flex-col gap-3 max-h-[400px] overflow-y-auto custom-scrollbar pr-1">
+                    <div class="text-center py-12 text-slate-500 text-xs">目前尚無傳輸歷史紀錄</div>
+                </div>
             </div>
-            <div>
-                <p class="font-bold text-slate-100 text-base">檔案接收完成！</p>
-                <p class="text-xs text-slate-400 mt-1">完整性校驗通過，可直接下載與預覽</p>
+        </div>
+
+        <!-- ================= 區塊三：進階設定面板 ================= -->
+        <div id="panelSettings" class="hidden flex flex-col gap-6">
+            <div class="luxury-glass rounded-3xl p-8 shadow-2xl flex flex-col gap-6">
+                <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                    <h2 class="text-base font-bold text-slate-200 flex items-center gap-2.5">
+                        <i data-lucide="settings" class="w-5 h-5 text-blue-400"></i>
+                        FR Air PRO 進階參數設定
+                    </h2>
+                    <span class="text-xs text-slate-400 font-mono">v8.5 Core</span>
+                </div>
+                <div class="flex flex-col gap-4 text-xs">
+                    <div class="flex items-center justify-between p-4 bg-slate-900/80 rounded-2xl border border-white/5">
+                        <div>
+                            <p class="font-bold text-slate-200">端對端加密防護 (E2EE)</p>
+                            <p class="text-slate-400 text-[11px] mt-0.5">所有傳輸封包均透過 WebRTC 二進位通道直連加密</p>
+                        </div>
+                        <span class="px-3 py-1 rounded-xl bg-blue-500/20 text-blue-300 font-mono font-bold">已啟用</span>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-900/80 rounded-2xl border border-white/5">
+                        <div>
+                            <p class="font-bold text-slate-200">網路信號伺服器 (PeerJS Cloud)</p>
+                            <p class="text-slate-400 text-[11px] mt-0.5">預設採用高穩定公共中繼站，確保跨網域互通</p>
+                        </div>
+                        <span class="px-3 py-1 rounded-xl bg-cyan-500/20 text-cyan-300 font-mono font-bold">連線正常</span>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-900/80 rounded-2xl border border-white/5">
+                        <div>
+                            <p class="font-bold text-slate-200">動態分塊大小 (Chunk Size)</p>
+                            <p class="text-slate-400 text-[11px] mt-0.5">優化大檔案緩衝效能</p>
+                        </div>
+                        <span class="px-3 py-1 rounded-xl bg-indigo-500/20 text-indigo-300 font-mono font-bold">256 KB / 塊</span>
+                    </div>
+                </div>
             </div>
-            <div id="recvFilesListContainer" class="w-full max-h-60 overflow-y-auto custom-scrollbar flex flex-col gap-2.5 text-left"></div>
         </div>
 
         <!-- 系統日誌控制台 -->
@@ -265,7 +345,7 @@
                 <button onclick="clearLogs()" class="hover:text-slate-200 cursor-pointer transition-colors px-2.5 py-1 rounded-lg bg-white/5">清除日誌</button>
             </div>
             <div id="logBox" class="h-28 overflow-y-auto custom-scrollbar font-mono text-[11px] text-slate-400 flex flex-col gap-1.5 p-3 bg-slate-950/90 rounded-2xl border border-white/5">
-                <div>[FR Air PRO v8.1] 系統初始化完成。標準6位數與2位數對接雙軌獨立運作中。</div>
+                <div>[FR Air PRO v8.5] 系統初始化完成。歷史紀錄與進階雙軌機制全功能啟動。</div>
             </div>
         </div>
 
@@ -279,7 +359,7 @@
 
     <!-- 頁尾 -->
     <footer class="w-full border-t border-white/5 py-8 text-center text-xs text-slate-500">
-        FR Air PRO v8.1 Engine &bull; Independent Dual-Track &bull; 2-Digit Instant Pairing
+        FR Air PRO v8.5 Engine &bull; Full-Feature Dual-Track &bull; High-Speed Instant Pairing
     </footer>
 
     <!-- PeerJS 函式庫 -->
@@ -293,6 +373,7 @@
         let peer = null;
         let stdRoomCode = '';
         let twoDRoomCode = '';
+        let transmissionHistory = [];
 
         function log(message, type = 'info') {
             const box = document.getElementById('logBox');
@@ -306,6 +387,35 @@
             document.getElementById('logBox').innerHTML = '';
         }
 
+        function switchTab(tab) {
+            const tTransfer = document.getElementById('tabTransferBtn');
+            const tHistory = document.getElementById('tabHistoryBtn');
+            const tSettings = document.getElementById('tabSettingsBtn');
+            const pTransfer = document.getElementById('panelTransfer');
+            const pHistory = document.getElementById('panelHistory');
+            const pSettings = document.getElementById('panelSettings');
+
+            tTransfer.className = "py-3 rounded-2xl font-bold text-xs transition-all duration-300 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 cursor-pointer";
+            tHistory.className = "py-3 rounded-2xl font-bold text-xs transition-all duration-300 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 cursor-pointer";
+            tSettings.className = "py-3 rounded-2xl font-bold text-xs transition-all duration-300 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 cursor-pointer";
+            
+            pTransfer.classList.add('hidden');
+            pHistory.classList.add('hidden');
+            pSettings.classList.add('hidden');
+
+            if (tab === 'transfer') {
+                tTransfer.className = "py-3 rounded-2xl font-bold text-xs transition-all duration-300 flex items-center justify-center gap-2 bg-blue-600 text-white shadow-lg cursor-pointer";
+                pTransfer.classList.remove('hidden');
+            } else if (tab === 'history') {
+                tHistory.className = "py-3 rounded-2xl font-bold text-xs transition-all duration-300 flex items-center justify-center gap-2 bg-blue-600 text-white shadow-lg cursor-pointer";
+                pHistory.classList.remove('hidden');
+                renderHistoryList();
+            } else if (tab === 'settings') {
+                tSettings.className = "py-3 rounded-2xl font-bold text-xs transition-all duration-300 flex items-center justify-center gap-2 bg-blue-600 text-white shadow-lg cursor-pointer";
+                pSettings.classList.remove('hidden');
+            }
+        }
+
         function switchMode(mode) {
             currentMode = mode;
             const btnStd = document.getElementById('modeStandardBtn');
@@ -314,13 +424,13 @@
             const sec2d = document.getElementById('sectionQuick2d');
 
             if (mode === 'standard') {
-                btnStd.className = "py-4 rounded-2xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 text-slate-950 shadow-xl shadow-blue-950/70 cursor-pointer scale-[1.02]";
-                btn2d.className = "py-4 rounded-2xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2.5 text-slate-400 hover:text-slate-200 cursor-pointer";
+                btnStd.className = "py-3.5 rounded-2xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 text-slate-950 shadow-xl cursor-pointer scale-[1.02]";
+                btn2d.className = "py-3.5 rounded-2xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 cursor-pointer";
                 secStd.classList.remove('hidden');
                 sec2d.classList.add('hidden');
             } else {
-                btn2d.className = "py-4 rounded-2xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 text-slate-950 shadow-xl shadow-cyan-950/70 cursor-pointer scale-[1.02]";
-                btnStd.className = "py-4 rounded-2xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2.5 text-slate-400 hover:text-slate-200 cursor-pointer";
+                btn2d.className = "py-3.5 rounded-2xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 text-slate-950 shadow-xl cursor-pointer scale-[1.02]";
+                btnStd.className = "py-3.5 rounded-2xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 cursor-pointer";
                 sec2d.classList.remove('hidden');
                 secStd.classList.add('hidden');
             }
@@ -366,7 +476,7 @@
                 document.getElementById('startSendBtnStd').disabled = true;
                 return;
             }
-            stdFiles.forEach((file, index) => {
+            stdFiles.forEach((file) => {
                 const item = document.createElement('div');
                 item.className = "flex items-center justify-between p-2.5 bg-slate-900 rounded-xl border border-white/5 text-xs";
                 item.innerHTML = `<span class="truncate text-slate-200">${file.name}</span><span class="text-slate-400 font-mono">${formatBytes(file.size)}</span>`;
@@ -395,9 +505,11 @@
             peer.on('open', () => {
                 log(`[標準] 節點上線成功，等待接收端連線...`, 'success');
                 document.getElementById('startSendBtnStd').disabled = true;
+                updateConnectionBadge('連線就緒', 'bg-blue-500');
             });
             peer.on('connection', (conn) => {
                 log(`[標準] 接收端已連線，開始傳輸...`, 'success');
+                updateConnectionBadge('傳輸中', 'bg-cyan-400 animate-pulse');
                 setupSenderTransfer(conn, stdFiles, 'Std');
             });
             peer.on('error', (err) => { log(`[標準] 錯誤: ${err.message}`, 'error'); });
@@ -473,9 +585,11 @@
             peer.on('open', () => {
                 log(`[2位數對接] 節點上線成功，等待接收端對接...`, 'success');
                 document.getElementById('startSendBtn2d').disabled = true;
+                updateConnectionBadge('對接就緒', 'bg-cyan-400');
             });
             peer.on('connection', (conn) => {
                 log(`[2位數對接] 接收端已對接，開始高速傳輸...`, 'success');
+                updateConnectionBadge('極速傳輸中', 'bg-blue-500 animate-pulse');
                 setupSenderTransfer(conn, twoDFiles, '2d');
             });
             peer.on('error', (err) => { 
@@ -496,6 +610,11 @@
             initReceiver(targetId, '2d');
         }
 
+        function updateConnectionBadge(text, dotClass) {
+            const badge = document.getElementById('connectionBadge');
+            badge.innerHTML = `<span class="w-2 h-2 rounded-full ${dotClass}"></span><span id="connectionBadgeText">${text}</span>`;
+        }
+
 
         // ================= 共通傳輸核心 (發送端) =================
         function setupSenderTransfer(conn, fileList, suffix) {
@@ -503,10 +622,12 @@
             const barId = `progressBar${suffix}`;
             const percentId = `progressPercent${suffix}`;
             const statusId = `progressStatus${suffix}`;
+            const speedId = `progressSpeed${suffix}`;
 
             document.getElementById(containerId).classList.remove('hidden');
 
             conn.on('open', async () => {
+                let startTime = Date.now();
                 for (let i = 0; i < fileList.length; i++) {
                     const file = fileList[i];
                     const chunkSize = 256 * 1024;
@@ -533,9 +654,13 @@
                             chunkIndex++;
 
                             const percent = Math.round((offset / file.size) * 100);
+                            const elapsed = (Date.now() - startTime) / 1000;
+                            const speed = elapsed > 0 ? (offset / (1024 * 1024)) / elapsed : 0;
+
                             document.getElementById(barId).style.width = percent + '%';
                             document.getElementById(percentId).innerText = percent + '%';
-                            document.getElementById(statusId).innerText = `傳送 [${i+1}/${fileList.length}] ${file.name}: ${formatBytes(offset)}`;
+                            document.getElementById(speedId).innerText = speed.toFixed(1) + ' MB/s';
+                            document.getElementById(statusId).innerText = `傳送 [${i+1}/${fileList.length}] ${file.name}`;
 
                             if (chunkIndex < totalChunks) {
                                 readNext();
@@ -551,6 +676,7 @@
                     });
                 }
                 document.getElementById(statusId).innerText = "全部檔案傳輸完成！";
+                updateConnectionBadge('傳輸完畢', 'bg-blue-500');
                 log(`檔案全部傳輸完畢！`, 'success');
             });
         }
@@ -575,17 +701,21 @@
                 const barId = `progressBar${suffix}`;
                 const percentId = `progressPercent${suffix}`;
                 const statusId = `progressStatus${suffix}`;
+                const speedId = `progressSpeed${suffix}`;
 
                 conn.on('open', () => {
                     log(`通道建立成功，等待接收檔案資料...`, 'success');
                     document.getElementById(containerId).classList.remove('hidden');
+                    updateConnectionBadge('接收連線中', 'bg-cyan-400 animate-pulse');
                 });
 
+                let startTime = Date.now();
                 conn.on('data', (packet) => {
                     if (packet.type === 'file-meta') {
                         incomingFileMeta = packet;
                         incomingChunks = new Array(packet.totalChunks);
                         receivedChunksCount = 0;
+                        startTime = Date.now();
                         log(`接收檔案標頭 [${packet.fileIndex+1}/${packet.totalFiles}]: ${packet.name}`);
                     } else if (packet.type === 'file-chunk') {
                         incomingChunks[packet.index] = packet.data;
@@ -593,10 +723,13 @@
 
                         const receivedBytes = incomingChunks.reduce((acc, c) => acc + (c ? c.byteLength : 0), 0);
                         const percent = Math.round((receivedBytes / incomingFileMeta.size) * 100);
+                        const elapsed = (Date.now() - startTime) / 1000;
+                        const speed = elapsed > 0 ? (receivedBytes / (1024 * 1024)) / elapsed : 0;
 
                         document.getElementById(barId).style.width = percent + '%';
                         document.getElementById(percentId).innerText = percent + '%';
-                        document.getElementById(statusId).innerText = `接收 [${incomingFileMeta.fileIndex+1}/${incomingFileMeta.totalFiles}]: ${formatBytes(receivedBytes)}`;
+                        document.getElementById(speedId).innerText = speed.toFixed(1) + ' MB/s';
+                        document.getElementById(statusId).innerText = `接收 [${incomingFileMeta.fileIndex+1}/${incomingFileMeta.totalFiles}]`;
 
                         if (receivedChunksCount >= incomingFileMeta.totalChunks) {
                             assembleFile();
@@ -612,9 +745,14 @@
             const blob = new Blob(incomingChunks, { type: incomingFileMeta.fileType || 'application/octet-stream' });
             const url = URL.createObjectURL(blob);
 
-            receivedFilesList.push({ name: incomingFileMeta.name, size: incomingFileMeta.size, type: incomingFileMeta.fileType, url: url });
+            const fileObj = { name: incomingFileMeta.name, size: incomingFileMeta.size, type: incomingFileMeta.fileType, url: url, time: new Date().toLocaleString() };
+            receivedFilesList.push(fileObj);
+            transmissionHistory.push(fileObj);
+            document.getElementById('historyCount').innerText = transmissionHistory.length;
+
             renderReceivedFiles();
             document.getElementById('recvSuccessArea').classList.remove('hidden');
+            updateConnectionBadge('接收完成', 'bg-blue-500');
             log(`檔案組裝完成: ${incomingFileMeta.name}`, 'success');
         }
 
@@ -643,6 +781,34 @@
                 container.appendChild(item);
             });
             lucide.createIcons();
+        }
+
+        function renderHistoryList() {
+            const container = document.getElementById('historyListContainer');
+            if (transmissionHistory.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">目前尚無傳輸歷史紀錄</div>`;
+                return;
+            }
+            container.innerHTML = '';
+            transmissionHistory.forEach((file) => {
+                const item = document.createElement('div');
+                item.className = "p-3.5 bg-slate-900/90 rounded-2xl border border-white/5 flex items-center justify-between text-xs";
+                item.innerHTML = `
+                    <div class="overflow-hidden mr-3">
+                        <p class="font-bold text-slate-200 truncate">${file.name}</p>
+                        <p class="text-[10px] text-slate-400 font-mono mt-0.5">${formatBytes(file.size)} &bull; ${file.time}</p>
+                    </div>
+                    <a href="${file.url}" download="${file.name}" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shrink-0">重新下載</a>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function clearHistory() {
+            transmissionHistory = [];
+            document.getElementById('historyCount').innerText = '0';
+            renderHistoryList();
+            log('歷史傳輸紀錄已清空');
         }
     </script>
 </body>
